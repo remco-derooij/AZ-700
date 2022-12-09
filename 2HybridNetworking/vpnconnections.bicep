@@ -2,6 +2,10 @@ param vnetgwmanufacturingid string
 param vnetgwcoreservicesid string
 
 
+@secure()
+param VPNSecret string
+
+
 resource CoreServicesGWtoManufacturingGW 'Microsoft.Network/connections@2020-11-01' = {
   name: 'CoreServicesGWtoManufacturingGW'
   location: 'eastus'
@@ -16,7 +20,7 @@ resource CoreServicesGWtoManufacturingGW 'Microsoft.Network/connections@2020-11-
 }
     connectionType:  'Vnet2Vnet'
     routingWeight: 0
-    sharedKey: 'KnightRider'
+    sharedKey: VPNSecret
   }
 }
 
@@ -34,7 +38,7 @@ resource ManufacturingGWtoCoreServicesGW 'Microsoft.Network/connections@2020-11-
 }
     connectionType:  'Vnet2Vnet'
     routingWeight: 0
-    sharedKey: 'KnightRider'
+    sharedKey: VPNSecret
   }
 }
 

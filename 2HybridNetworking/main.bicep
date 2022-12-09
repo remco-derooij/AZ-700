@@ -4,6 +4,9 @@ param AdminPassword string
 
 param extIP string
 
+@secure()
+param VPNSecret string
+
 
 
 
@@ -67,6 +70,7 @@ module vpnconnections 'vpnconnections.bicep' = {
     vnetgwmanufacturing
   ]
   params: {
+     VPNSecret:VPNSecret
      vnetgwmanufacturingid:vnetgwmanufacturing.outputs.ManufacturingVnetGatewayid
      vnetgwcoreservicesid:vnetgwcoreservices.outputs.CoreServicesVnetGatewayid
   }
