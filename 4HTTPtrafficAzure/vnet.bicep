@@ -1,4 +1,4 @@
-
+param extIP string
 
 resource IntLBVNET 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   name: 'IntLB-VNET'
@@ -17,7 +17,7 @@ resource IntLBVNET 'Microsoft.Network/virtualNetworks@2019-11-01' = {
         }
       }
       {
-        name: 'myBastionHost'
+        name: 'AzureBastionSubnet'
         properties: {
           addressPrefix: '10.1.1.0/24'
           }
@@ -35,47 +35,31 @@ resource IntLBVNET 'Microsoft.Network/virtualNetworks@2019-11-01' = {
 }
 
 
-
-resource BastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
-  name: 'myBastionHost'
-  location: 'westeurope'
-  sku: {
-     name:  'Basic'
-  }
-  properties: {
-    scaleUnits: 2
-    ipConfigurations: [
-     {
-      properties: {
-        publicIPAddress: { 
-          id: BastionPiP.id
-        }
-        subnet: {id: '${IntLBVNET.id}/subnets/myBastionHost'}
-        }
-      }]
-     }
-        
-  }
-
-
-
-
-resource BastionPiP 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
-  name: 'BastionPiP'
-  location: 'westeurope'
-  properties: {
-    publicIPAllocationMethod: 'Static'
-
-  }
-
+resource NSGBackend 'Microsoft.Network/networkSecurityGroups@2019-11-01' = {
+  name: 'NSG-Backend'
   
-  sku: {
-    tier: 'Regional'
-    name: 'Standard'
+  location: 'westeurope'
+  properties: {
+    securityRules: [
+      {
+        name: 'rule-allow-RDP'
+        properties: {
+          description: 'RULE-ALLOW-RDP'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          sourceAddressPrefix: extIP
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 150
+          direction: 'Inbound'
+        }
+      }
+    ]
   }
 }
 
 
 
 
-output IntLBVNETVnetid string = IntLBVNET.id
+output IntLBVNETid string = IntLBVNET.id

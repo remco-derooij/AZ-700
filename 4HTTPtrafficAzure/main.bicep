@@ -1,20 +1,43 @@
-// //parameter for password
-// @secure()
-// param AdminPassword string
+//parameter for password
+@secure()
+param AdminPassword string
 
-// param extIP string
-
-
+param extIP string
 
 
 module VNET 'vnet.bicep' = {
   name: 'vnet'
 
-  // params: {
-  //   extIP: extIP
-  // }
+  params: {
+    extIP: extIP
+  }
 
 }
+
+
+module bastion 'bastion.bicep' = {
+  name: 'bastion'
+  dependsOn: [ VNET ]
+  params: {
+    IntLBVNETVnetid:VNET.outputs.IntLBVNETid
+  }
+}
+  
+
+module ComputeBackend 'ComputeBackend.bicep' = {
+  name: 'ComputeBackend'
+  dependsOn: [VNET]
+  params: {
+    IntLBVNETVnetid:VNET.outputs.IntLBVNETid
+    AdminPassword: AdminPassword 
+    location: 'westeurope'
+  }
+}
+
+
+
+
+
 
 // module ComputeCoreServicesDB 'ComputeCoreServicesDB.bicep' = {
 //   name: 'ComputeCoreServicesDB'
